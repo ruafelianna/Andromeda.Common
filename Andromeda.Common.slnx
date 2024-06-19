@@ -3,4 +3,5 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="Andromeda.Collections\Andromeda.Collections.csproj" />
 </Solution>

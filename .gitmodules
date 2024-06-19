@@ -1,0 +1,3 @@
+[submodule "Andromeda.Collections"]
+	path = Andromeda.Collections
+	url = https://github.com/ruafelianna/Andromeda.Collections.git
