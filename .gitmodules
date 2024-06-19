@@ -1,3 +1,6 @@
 [submodule "Andromeda.Collections"]
 	path = Andromeda.Collections
 	url = https://github.com/ruafelianna/Andromeda.Collections.git
+[submodule "Andromeda.Diagnostics"]
+	path = Andromeda.Diagnostics
+	url = git@github.com:ruafelianna/Andromeda.Diagnostics.git

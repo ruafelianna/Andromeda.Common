@@ -4,4 +4,5 @@
     <File Path=".gitignore" />
   </Folder>
   <Project Path="Andromeda.Collections\Andromeda.Collections.csproj" />
+  <Project Path="Andromeda.Diagnostics\Andromeda.Diagnostics.csproj" />
 </Solution>
