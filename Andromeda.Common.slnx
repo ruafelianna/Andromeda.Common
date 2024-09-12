@@ -6,4 +6,5 @@
   <Project Path="Andromeda.Collections\Andromeda.Collections.csproj" />
   <Project Path="Andromeda.Concurrent\Andromeda.Concurrent.csproj" />
   <Project Path="Andromeda.Reflection\Andromeda.Reflection.csproj" />
+  <Project Path="Andromeda.SourceGenerators.Enum\Andromeda.SourceGenerators.Enum.csproj" />
 </Solution>
