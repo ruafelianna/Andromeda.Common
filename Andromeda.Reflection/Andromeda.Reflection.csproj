@@ -16,4 +16,9 @@
     <PackageVersion>1.0.0-rc</PackageVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Andromeda.SourceGenerators.Enum\Andromeda.SourceGenerators.Enum.csproj"
+                      OutputItemType="Analyzer" />
+  </ItemGroup>
+
 </Project>
