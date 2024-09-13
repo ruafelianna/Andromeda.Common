@@ -8,7 +8,8 @@ namespace Andromeda.Reflection.Enums
     /// </summary>
     [HasConstStrings(
         ConstClass = nameof(AccessModifiersConsts),
-        ConstNamespace = $"{nameof(Andromeda)}.{nameof(Reflection)}.{nameof(Consts)}"
+        ConstNamespace = $"{nameof(Andromeda)}.{nameof(Reflection)}.{nameof(Consts)}",
+        ExtNamespace = $"{nameof(Andromeda)}.{nameof(Reflection)}.{nameof(Extensions)}"
     )]
     public enum AccessModifier : byte
     {
