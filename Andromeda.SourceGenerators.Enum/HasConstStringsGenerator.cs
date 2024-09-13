@@ -73,20 +73,40 @@ namespace Andromeda.SourceGenerators.Enum
                             return null;
                         }
 
+                        var enumName = enumSymbol.Name;
+
+                        var enumNamespace = enumSymbol.ContainingNamespace
+                            .ToDisplayString(
+                                SymbolDisplayFormat.FullyQualifiedFormat
+                            )
+                            .Substring("global::".Length);
+
+                        var extName = (
+                            namedArgs.TryGetValue(
+                                _extClass,
+                                out var typedCt
+                            ) ? (string?)typedCt.Value : null
+                        ) ?? $"{enumName}Extensions";
+
+                        var extNamespace = (
+                            namedArgs.TryGetValue(
+                                _extNamespace,
+                                out typedCt
+                            ) ? (string?)typedCt.Value : null
+                        ) ?? enumNamespace;
+
                         return new(
-                            enumSymbol.Name,
-                            enumSymbol.ContainingNamespace
-                                .ToDisplayString(
-                                    SymbolDisplayFormat.FullyQualifiedFormat
-                                )
-                                .Substring("global::".Length),
-                            clsName,
-                            clsNamespace,
+                            enumName,
+                            enumNamespace,
                             enumType
                                 .GetMembers()
                                 .Where(x => !x.IsImplicitlyDeclared)
                                 .Select(x => x.Name)
-                                .ToImmutableArray()
+                                .ToImmutableArray(),
+                            clsName,
+                            clsNamespace,
+                            extName,
+                            extNamespace
                         );
                     }
                 )
@@ -108,10 +128,11 @@ namespace Andromeda.SourceGenerators.Enum
 
 using global::System.Collections.Generic;
 using global::{enumInfo.ClassNamespace};
+using global::{enumInfo.EnumNamespace};
 
-namespace {enumInfo.EnumNamespace}
+namespace {enumInfo.ExtNamespace}
 {{
-    public static class {enumInfo.EnumName}Extensions
+    public static partial class {enumInfo.ExtName}
     {{
         public static string AsString(
             this {enumInfo.EnumName} value
@@ -148,5 +169,11 @@ namespace {enumInfo.EnumNamespace}
 
         private const string _constNamespace
             = nameof(HasConstStringsAttribute.ConstNamespace);
+
+        private const string _extClass
+            = nameof(HasConstStringsAttribute.ExtClass);
+
+        private const string _extNamespace
+            = nameof(HasConstStringsAttribute.ExtNamespace);
     }
 }

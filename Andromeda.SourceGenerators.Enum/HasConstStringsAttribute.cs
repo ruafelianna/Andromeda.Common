@@ -8,5 +8,9 @@ namespace Andromeda.SourceGenerators.Enum
         public string? ConstNamespace { get; init; }
 
         public string? ConstClass { get; init; }
+
+        public string? ExtNamespace { get; init; }
+
+        public string? ExtClass { get; init; }
     }
 }

@@ -5,8 +5,10 @@ namespace Andromeda.SourceGenerators.Enum
     internal record EnumInfo(
         string EnumName,
         string EnumNamespace,
+        ImmutableArray<string> EnumItems,
         string ClassName,
         string ClassNamespace,
-        ImmutableArray<string> EnumItems
+        string ExtName,
+        string ExtNamespace
     );
 }
