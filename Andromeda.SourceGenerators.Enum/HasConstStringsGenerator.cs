@@ -1,7 +1,15 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using static Andromeda.CSharp.Consts.Comments;
+using static Andromeda.CSharp.Consts.Extensions;
+using static Andromeda.CSharp.Consts.Keywords;
+using static Andromeda.CSharp.Consts.Namespaces;
+using static Andromeda.CSharp.Consts.Prefixes;
+using static Andromeda.SourceGenerators.Enum.InternalConsts;
 
 namespace Andromeda.SourceGenerators.Enum
 {
@@ -13,102 +21,9 @@ namespace Andromeda.SourceGenerators.Enum
         )
         {
             var cls = context.SyntaxProvider
-                .CreateSyntaxProvider<EnumInfo?>(
-                    (node, token) =>
-                    {
-                        if (node is not AttributeSyntax attr)
-                        {
-                            return false;
-                        }
-
-                        return attr.Name switch
-                        {
-                            SimpleNameSyntax sns => sns.Identifier.Text,
-                            QualifiedNameSyntax qns => qns.Right.Identifier.Text,
-                            _ => null,
-                        } is _attrName or _attrNameShort;
-                    },
-
-                    (ctx, token) =>
-                    {
-                        var attrSyntax = (AttributeSyntax)ctx.Node!;
-
-                        var parent = attrSyntax.Parent?.Parent;
-
-                        if (parent is not EnumDeclarationSyntax enumSyntax)
-                        {
-                            return null;
-                        }
-
-                        var enumSymbol = ctx.SemanticModel
-                            .GetDeclaredSymbol(enumSyntax, token);
-
-                        if (enumSymbol is not ITypeSymbol enumType)
-                        {
-                            return null;
-                        }
-
-                        var attr = enumType
-                            .GetAttributes()
-                            .SingleOrDefault(x =>
-                                x.AttributeClass?.ToDisplayString(
-                                    SymbolDisplayFormat.FullyQualifiedFormat
-                                ) == $"global::{_attrNamespace}.{_attrName}"
-                            );
-
-                        if (attr is null)
-                        {
-                            return null;
-                        }
-
-                        var namedArgs = attr.NamedArguments
-                            .ToImmutableDictionary();
-
-                        var clsName = (string?)namedArgs[_constClass].Value;
-
-                        var clsNamespace = (string?)namedArgs[_constNamespace].Value;
-
-                        if (clsName is null || clsNamespace is null)
-                        {
-                            return null;
-                        }
-
-                        var enumName = enumSymbol.Name;
-
-                        var enumNamespace = enumSymbol.ContainingNamespace
-                            .ToDisplayString(
-                                SymbolDisplayFormat.FullyQualifiedFormat
-                            )
-                            .Substring("global::".Length);
-
-                        var extName = (
-                            namedArgs.TryGetValue(
-                                _extClass,
-                                out var typedCt
-                            ) ? (string?)typedCt.Value : null
-                        ) ?? $"{enumName}Extensions";
-
-                        var extNamespace = (
-                            namedArgs.TryGetValue(
-                                _extNamespace,
-                                out typedCt
-                            ) ? (string?)typedCt.Value : null
-                        ) ?? enumNamespace;
-
-                        return new(
-                            enumName,
-                            enumNamespace,
-                            enumType
-                                .GetMembers()
-                                .Where(x => !x.IsImplicitlyDeclared)
-                                .Select(x => x.Name)
-                                .ToImmutableArray(),
-                            clsName,
-                            clsNamespace,
-                            extName,
-                            extNamespace
-                        );
-                    }
+                .CreateSyntaxProvider(
+                    CouldBeRequiredAttribute,
+                    ProcessAttribute
                 )
                 .Where(record => record is not null)
                 .Collect();
@@ -117,63 +32,143 @@ namespace Andromeda.SourceGenerators.Enum
             {
                 foreach (var enumInfo in source)
                 {
-                    var items = enumInfo!.EnumItems
-                        .Select(x => $"{_tab}[{enumInfo.EnumName}.{x}] = {enumInfo.ClassName}.{x}");
-
                     ctx.AddSource(
-                        $"{enumInfo.EnumNamespace}.{enumInfo.EnumName}.g.cs",
-                        $@"// ----------------
-// <autogenerated/>
-// ----------------
-
-using global::System.Collections.Generic;
-using global::{enumInfo.ClassNamespace};
-using global::{enumInfo.EnumNamespace};
-
-namespace {enumInfo.ExtNamespace}
-{{
-    public static partial class {enumInfo.ExtName}
-    {{
-        public static string AsString(
-            this {enumInfo.EnumName} value
-        ) => _{enumInfo.EnumName}Dict[value];
-
-        private static readonly Dictionary<{enumInfo.EnumName}, string> _{enumInfo.EnumName}Dict
-            = new()
-            {{
-{string.Join($",{_nl}", items)},
-            }};
-    }}
-}}
-"
+                        $"{enumInfo!.EnumNamespace}.{enumInfo.EnumName}{EXT_GeneratedCSharp}",
+                        GetSourceCode(enumInfo)
                     );
                 }
             });
         }
 
-        private const string _tab = "                ";
+        private bool CouldBeRequiredAttribute(
+            SyntaxNode node,
+            CancellationToken token
+        )
+        {
+            if (node is not AttributeSyntax attr)
+            {
+                return false;
+            }
 
-        private const string _nl = "\r\n";
+            return attr.Name switch
+            {
+                SimpleNameSyntax sns => sns.Identifier.Text,
+                QualifiedNameSyntax qns => qns.Right.Identifier.Text,
+                _ => null,
+            } is A_HasConstStrings or A_HasConstStringsFull;
+        }
 
-        private const string _attrName
-            = nameof(HasConstStringsAttribute);
+        private EnumInfo? ProcessAttribute(
+            GeneratorSyntaxContext ctx,
+            CancellationToken token
+        )
+        {
+            var attrSyntax = (AttributeSyntax)ctx.Node!;
 
-        private const string _attrNameShort
-            = "HasConstStrings";
+            var parent = attrSyntax.Parent?.Parent;
 
-        private const string _attrNamespace
-            = $"{nameof(Andromeda)}.{nameof(SourceGenerators)}.{nameof(Enum)}";
+            if (parent is not EnumDeclarationSyntax enumSyntax)
+            {
+                return null;
+            }
 
-        private const string _constClass
-            = nameof(HasConstStringsAttribute.ConstClass);
+            var enumSymbol = ctx.SemanticModel
+                .GetDeclaredSymbol(enumSyntax, token);
 
-        private const string _constNamespace
-            = nameof(HasConstStringsAttribute.ConstNamespace);
+            if (enumSymbol is not ITypeSymbol enumType)
+            {
+                return null;
+            }
 
-        private const string _extClass
-            = nameof(HasConstStringsAttribute.ExtClass);
+            var attr = enumType
+                .GetAttributes()
+                .SingleOrDefault(x =>
+                    x.AttributeClass?.ToDisplayString(
+                        SymbolDisplayFormat.FullyQualifiedFormat
+                    ) == $"{PRE_Global}{NS_Local}.{A_HasConstStringsFull}"
+                );
 
-        private const string _extNamespace
-            = nameof(HasConstStringsAttribute.ExtNamespace);
+            if (attr is null)
+            {
+                return null;
+            }
+
+            var namedArgs = attr.NamedArguments
+                .ToImmutableDictionary();
+
+            var clsName = (string?)namedArgs[P_HasConstStrings_ConstClass].Value;
+
+            var clsNamespace = (string?)namedArgs[P_HasConstStrings_ConstNamespace].Value;
+
+            if (clsName is null || clsNamespace is null)
+            {
+                return null;
+            }
+
+            var enumName = enumSymbol.Name;
+
+            var enumNamespace = enumSymbol.ContainingNamespace
+                .ToDisplayString(
+                    SymbolDisplayFormat.FullyQualifiedFormat
+                )
+                .Substring(PRE_Global.Length);
+
+            var extName = (
+                namedArgs.TryGetValue(
+                    P_HasConstStrings_ExtClass,
+                    out var typedCt
+                ) ? (string?)typedCt.Value : null
+            ) ?? $"{enumName}{POST_Extensions}";
+
+            var extNamespace = (
+                namedArgs.TryGetValue(
+                    P_HasConstStrings_ExtNamespace,
+                    out typedCt
+                ) ? (string?)typedCt.Value : null
+            ) ?? enumNamespace;
+
+            return new(
+                enumName,
+                enumNamespace,
+                enumType
+                    .GetMembers()
+                    .Where(x => !x.IsImplicitlyDeclared)
+                    .Select(x => x.Name)
+                    .ToImmutableArray(),
+                clsName,
+                clsNamespace,
+                extName,
+                extNamespace
+            );
+        }
+
+        private string GetSourceCode(EnumInfo enumInfo)
+        {
+            var items = enumInfo.EnumItems
+                .Select(x => $"{PropTab}[{enumInfo.EnumName}.{x}] = {enumInfo.ClassName}.{x}");
+
+            return $@"{C_Autogenerated}
+
+{KW_Using} {PRE_Global}{NS_System_Collections_Generic};
+{KW_Using} {PRE_Global}{enumInfo.ClassNamespace};
+{KW_Using} {PRE_Global}{enumInfo.EnumNamespace};
+
+{KW_Namespace} {enumInfo.ExtNamespace}
+{{
+    {KW_Public} {KW_Static} {KW_Partial} {KW_Class} {enumInfo.ExtName}
+    {{
+        {KW_Public} {KW_Static} {KW_String} {M_AsString}(
+            {KW_This} {enumInfo.EnumName} value
+        ) => _{enumInfo.EnumName}{POST_Dict}[value];
+
+        {KW_Private} {KW_Static} {KW_Readonly} {nameof(Dictionary<int, int>)}<{enumInfo.EnumName}, {KW_String}> _{enumInfo.EnumName}{POST_Dict}
+            = {KW_New}()
+            {{
+{string.Join($",{NewLine}", items)},
+            }};
+    }}
+}}
+";
+        }
     }
 }

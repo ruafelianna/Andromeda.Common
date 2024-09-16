@@ -31,4 +31,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Andromeda.CSharp.Consts\Andromeda.CSharp.Consts.csproj" />
+  </ItemGroup>
+
 </Project>
