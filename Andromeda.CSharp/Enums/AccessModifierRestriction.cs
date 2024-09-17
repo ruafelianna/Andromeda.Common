@@ -1,4 +1,4 @@
-namespace Andromeda.Reflection.Enums
+namespace Andromeda.CSharp.Enums
 {
     public enum AccessModifierRestriction
     {

@@ -1,15 +1,15 @@
-using Andromeda.Reflection.Consts;
+using Andromeda.CSharp.Consts;
 using Andromeda.SourceGenerators.Enum;
 
-namespace Andromeda.Reflection.Enums
+namespace Andromeda.CSharp.Enums
 {
     /// <summary>
     /// <seealso href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers"/>
     /// </summary>
     [HasConstStrings(
         ConstClass = nameof(AccessModifiersConsts),
-        ConstNamespace = $"{nameof(Andromeda)}.{nameof(Reflection)}.{nameof(Consts)}",
-        ExtNamespace = $"{nameof(Andromeda)}.{nameof(Reflection)}.{nameof(Extensions)}"
+        ConstNamespace = $"{nameof(Andromeda)}.{nameof(CSharp)}.{nameof(Consts)}",
+        ExtNamespace = $"{nameof(Andromeda)}.{nameof(CSharp)}.{nameof(Extensions)}"
     )]
     public enum AccessModifier : byte
     {

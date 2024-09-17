@@ -1,6 +1,6 @@
-using Andromeda.Reflection.Enums;
+using Andromeda.CSharp.Enums;
 
-namespace Andromeda.Reflection.Extensions
+namespace Andromeda.CSharp.Extensions
 {
     public static partial class AccessModifierExtensions
     {
