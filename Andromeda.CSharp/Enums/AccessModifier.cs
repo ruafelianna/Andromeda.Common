@@ -1,4 +1,3 @@
-using Andromeda.CSharp.Consts;
 using Andromeda.SourceGenerators.Enum;
 
 namespace Andromeda.CSharp.Enums
@@ -7,8 +6,7 @@ namespace Andromeda.CSharp.Enums
     /// <seealso href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers"/>
     /// </summary>
     [HasConstStrings(
-        ConstClass = nameof(AccessModifiersConsts),
-        ConstNamespace = $"{nameof(Andromeda)}.{nameof(CSharp)}.{nameof(Consts)}",
+        ConstClass = nameof(AccessModifierConsts),
         ExtNamespace = $"{nameof(Andromeda)}.{nameof(CSharp)}.{nameof(Extensions)}"
     )]
     public enum AccessModifier : byte
@@ -56,5 +54,22 @@ namespace Andromeda.CSharp.Enums
         /// the type or member
         /// </summary>
         File = 6,
+    }
+
+    public class AccessModifierConsts
+    {
+        public const string Public = "public";
+
+        public const string Private = "private";
+
+        public const string Protected = "protected";
+
+        public const string Internal = "internal";
+
+        public const string ProtectedInternal = "protected internal";
+
+        public const string PrivateProtected = "private protected";
+
+        public const string File = "file";
     }
 }
