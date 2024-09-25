@@ -15,5 +15,17 @@ namespace Andromeda.Collections.Extensions
                     ? val as TDefault?
                     : null
             ) ?? defaultValue;
+
+        public static TDefault? GetValueOrDefault<TKey, TDefault>(
+            this IDictionary<TKey, object?> dict,
+            TKey key,
+            TDefault? defaultValue
+        )
+            where TDefault : struct
+            => (
+                dict.TryGetValue(key, out var val)
+                    ? val as TDefault?
+                    : null
+            ) ?? defaultValue;
     }
 }
