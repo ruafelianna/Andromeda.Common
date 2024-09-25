@@ -18,8 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Andromeda.SourceGenerators.Enum\Andromeda.SourceGenerators.Enum.csproj"
-                      OutputItemType="Analyzer" />
+    <PackageReference Include="Andromeda.SourceGenerators.Enum" Version="1.0.0-rc"
+                      OutputItemType="Analyzer"/>
   </ItemGroup>
 
 </Project>
