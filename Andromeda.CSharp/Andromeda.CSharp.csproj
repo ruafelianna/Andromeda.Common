@@ -19,7 +19,9 @@
 
   <ItemGroup>
     <PackageReference Include="Andromeda.SourceGenerators.Enum" Version="1.0.0-rc"
-                      OutputItemType="Analyzer"/>
+                      OutputItemType="Analyzer"
+                      PrivateAssets ="all"
+                      ReferenceOutputAssembly="False"/>
   </ItemGroup>
 
 </Project>
