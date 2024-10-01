@@ -16,4 +16,8 @@
     <PackageVersion>1.0.0-rc</PackageVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Andromeda.Configuration.Abstractions\Andromeda.Configuration.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
