@@ -5,8 +5,8 @@ namespace Andromeda.CSharp.Enums
     /// <summary>
     /// <seealso href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers"/>
     /// </summary>
-    [HasConstStrings(
-        ConstClass = nameof(AccessModifierConsts),
+    [HasStrings(
+        StringsClass = nameof(AccessModifierConsts),
         ExtNamespace = $"{nameof(Andromeda)}.{nameof(CSharp)}.{nameof(Extensions)}"
     )]
     public enum AccessModifier : byte
