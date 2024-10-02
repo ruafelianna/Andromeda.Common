@@ -7,23 +7,26 @@ namespace Andromeda.SourceGenerators.Enum
         public const string NS_Local
             = $"{nameof(Andromeda)}.{nameof(SourceGenerators)}.{nameof(Enum)}";
 
-        public const string A_HasConstStrings
-            = "HasConstStrings";
+        public const string A_HasStrings
+            = "HasStrings";
 
-        public const string A_HasConstStringsFull
-            = $"{A_HasConstStrings}{POST_Attribute}";
+        public const string A_HasStringsFull
+            = $"{A_HasStrings}{POST_Attribute}";
 
-        public const string P_HasConstStrings_ConstClass
-            = "ConstClass";
+        public const string P_HasStrings_StringsClass
+            = "StringsClass";
 
-        public const string P_HasConstStrings_ConstNamespace
-            = "ConstNamespace";
+        public const string P_HasStrings_StringsNamespace
+            = "StringsNamespace";
 
-        public const string P_HasConstStrings_ExtClass
+        public const string P_HasStrings_ExtClass
             = "ExtClass";
 
-        public const string P_HasConstStrings_ExtNamespace
+        public const string P_HasStrings_ExtNamespace
             = "ExtNamespace";
+
+        public const string P_HasStrings_GenerateFunctions
+            = "GenerateFunctions";
 
         public const string M_AsString
             = "AsString";

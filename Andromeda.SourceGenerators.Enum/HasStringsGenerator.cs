@@ -18,7 +18,7 @@ using static Andromeda.SourceGenerators.Enum.InternalConsts;
 namespace Andromeda.SourceGenerators.Enum
 {
     [Generator(LanguageNames.CSharp)]
-    public class HasConstStringsGenerator : IIncrementalGenerator
+    public class HasStringsGenerator : IIncrementalGenerator
     {
         public void Initialize(
             IncrementalGeneratorInitializationContext context
@@ -28,7 +28,7 @@ namespace Andromeda.SourceGenerators.Enum
 
             var source = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
-                    $"{NS_Local}.{A_HasConstStringsFull}",
+                    $"{NS_Local}.{A_HasStringsFull}",
                     IsEnum,
                     TransformEnum
                 )
@@ -46,15 +46,17 @@ namespace Andromeda.SourceGenerators.Enum
 {KW_Namespace} {NS_Local}
 {{
     [{nameof(AttributeUsageAttribute)}({nameof(AttributeTargets)}.{nameof(AttributeTargets.Enum)})]
-    {KW_Internal} {KW_Class} {A_HasConstStringsFull} : {nameof(Attribute)}
+    {KW_Internal} {KW_Class} {A_HasStringsFull} : {nameof(Attribute)}
     {{
-        {KW_Public} {KW_String}? {P_HasConstStrings_ConstNamespace} {{ {KW_Get}; {KW_Set}; }}
+        {KW_Public} {KW_String}? {P_HasStrings_StringsNamespace} {{ {KW_Get}; {KW_Set}; }}
 
-        {KW_Public} {KW_String}? {P_HasConstStrings_ConstClass} {{ {KW_Get}; {KW_Set}; }}
+        {KW_Public} {KW_String}? {P_HasStrings_StringsClass} {{ {KW_Get}; {KW_Set}; }}
 
-        {KW_Public} {KW_String}? {P_HasConstStrings_ExtNamespace} {{ {KW_Get}; {KW_Set}; }}
+        {KW_Public} {KW_String}? {P_HasStrings_ExtNamespace} {{ {KW_Get}; {KW_Set}; }}
 
-        {KW_Public} {KW_String}? {P_HasConstStrings_ExtClass} {{ {KW_Get}; {KW_Set}; }}
+        {KW_Public} {KW_String}? {P_HasStrings_ExtClass} {{ {KW_Get}; {KW_Set}; }}
+
+        {KW_Public} {KW_Bool} {P_HasStrings_GenerateFunctions} {{ {KW_Get}; {KW_Set}; }}
     }}
 }}";
 
@@ -65,7 +67,8 @@ namespace Andromeda.SourceGenerators.Enum
             string ClassName,
             string ClassNamespace,
             string ExtName,
-            string ExtNamespace
+            string ExtNamespace,
+            bool GenerateFunctions
         );
 
         private static bool IsEnum(
@@ -94,11 +97,11 @@ namespace Andromeda.SourceGenerators.Enum
                 .NamedArguments
                 .ToImmutableDictionary();
 
-            // Get consts-defining class name
+            // Get strings-defining class name
 
             if (
                 !namedArgs.TryGetValue(
-                    P_HasConstStrings_ConstClass,
+                    P_HasStrings_StringsClass,
                     out var clsNameConst
                 )
                 || clsNameConst.Value is not string clsName
@@ -118,28 +121,35 @@ namespace Andromeda.SourceGenerators.Enum
                 .Substring(PRE_Global.Length);
 
             // Get name and namespace of the generated class
-            // and namespace for consts-defining class
+            // and namespace for strings-defining class
 
             var clsNamespace = (
                 namedArgs.TryGetValue(
-                    P_HasConstStrings_ConstNamespace,
+                    P_HasStrings_StringsNamespace,
                     out var typedCt
                 ) ? typedCt.Value as string : null
             ) ?? enumNamespace;
 
             var extName = (
                 namedArgs.TryGetValue(
-                    P_HasConstStrings_ExtClass,
+                    P_HasStrings_ExtClass,
                     out typedCt
                 ) ? typedCt.Value as string : null
             ) ?? $"{enumName}{POST_Extensions}";
 
             var extNamespace = (
                 namedArgs.TryGetValue(
-                    P_HasConstStrings_ExtNamespace,
+                    P_HasStrings_ExtNamespace,
                     out typedCt
                 ) ? typedCt.Value as string : null
             ) ?? enumNamespace;
+
+            var genFuncs = (
+                namedArgs.TryGetValue(
+                    P_HasStrings_GenerateFunctions,
+                    out typedCt
+                ) ? typedCt.Value as bool? : null
+            ) ?? false;
 
             return new(
                 enumName,
@@ -152,7 +162,8 @@ namespace Andromeda.SourceGenerators.Enum
                 clsName,
                 clsNamespace,
                 extName,
-                extNamespace
+                extNamespace,
+                genFuncs
             );
         }
 
@@ -161,7 +172,7 @@ namespace Andromeda.SourceGenerators.Enum
         )
         {
             ctx.AddSource(
-                $"{NS_Local}.{A_HasConstStringsFull}{EXT_GeneratedCSharp}",
+                $"{NS_Local}.{A_HasStringsFull}{EXT_GeneratedCSharp}",
                 SourceText.From(AttributeSourceCode, Encoding.UTF8)
             );
         }
@@ -179,10 +190,19 @@ namespace Andromeda.SourceGenerators.Enum
 
         private static string GenerateClass(EnumInfo enumInfo)
         {
+            var func = enumInfo.GenerateFunctions ? "() => " : null;
+
+            var dictType = enumInfo.GenerateFunctions
+                ? $"{nameof(Func<int>)}<{KW_String}>"
+                : KW_String;
+
+            var funcBrackets = enumInfo.GenerateFunctions ? "()" : null;
+
             var items = enumInfo.EnumItems
-                .Select(x => $"{PropTab}[{enumInfo.EnumName}.{x}] = {enumInfo.ClassName}.{x},");
+                .Select(x => $"{PropTab}[{enumInfo.EnumName}.{x}] = {func}{enumInfo.ClassName}.{x},");
 
             var ns = new string[] {
+                NS_System,
                 NS_System_Collections_Generic,
                 enumInfo.ClassNamespace,
                 enumInfo.EnumNamespace,
@@ -201,9 +221,9 @@ namespace Andromeda.SourceGenerators.Enum
     {{
         {KW_Public} {KW_Static} {KW_String} {M_AsString}(
             {KW_This} {enumInfo.EnumName} value
-        ) => _{enumInfo.EnumName}{POST_Dict}[value];
+        ) => _{enumInfo.EnumName}{POST_Dict}[value]{funcBrackets};
 
-        {KW_Private} {KW_Static} {KW_Readonly} {nameof(Dictionary<int, int>)}<{enumInfo.EnumName}, {KW_String}> _{enumInfo.EnumName}{POST_Dict}
+        {KW_Private} {KW_Static} {KW_Readonly} {nameof(Dictionary<int, int>)}<{enumInfo.EnumName}, {dictType}> _{enumInfo.EnumName}{POST_Dict}
             = {KW_New}()
             {{
 {string.Join(NewLine, items)}
