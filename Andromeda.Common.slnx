@@ -3,6 +3,7 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="Andromeda.Checksums\Andromeda.Checksums.csproj" />
   <Project Path="Andromeda.Collections\Andromeda.Collections.csproj" />
   <Project Path="Andromeda.Concurrent\Andromeda.Concurrent.csproj" />
   <Project Path="Andromeda.Configuration.Abstractions\Andromeda.Configuration.Abstractions.csproj" />
