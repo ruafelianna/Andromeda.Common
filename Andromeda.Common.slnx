@@ -10,6 +10,7 @@
   <Project Path="Andromeda.Configuration\Andromeda.Configuration.csproj" />
   <Project Path="Andromeda.CSharp.Consts\Andromeda.CSharp.Consts.csproj" />
   <Project Path="Andromeda.CSharp\Andromeda.CSharp.csproj" />
+  <Project Path="Andromeda.Localization.Abstractions\Andromeda.Localization.Abstractions.csproj" />
   <Project Path="Andromeda.Localization\Andromeda.Localization.csproj" />
   <Project Path="Andromeda.Numerics\Andromeda.Numerics.csproj" />
   <Project Path="Andromeda.SourceGenerators.Enum\Andromeda.SourceGenerators.Enum.csproj" />
