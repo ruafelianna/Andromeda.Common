@@ -16,4 +16,14 @@
     <PackageVersion>1.0.0-rc</PackageVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="20.1.63" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+    <PackageReference Include="Tommy" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Andromeda.Localization.Abstractions\Andromeda.Localization.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
