@@ -2,7 +2,7 @@ using static Andromeda.CSharp.Consts.Postfixes;
 
 namespace Andromeda.SourceGenerators.Enum
 {
-    internal class InternalConsts
+    internal static class InternalConsts
     {
         public const string NS_Local
             = $"{nameof(Andromeda)}.{nameof(SourceGenerators)}.{nameof(Enum)}";
