@@ -14,37 +14,30 @@ namespace Andromeda.Localization
 {
     public class TranslationProvider : ReactiveObject, ITranslationProvider
     {
-        public TranslationProvider(Assembly assembly, string path)
+        public TranslationProvider(
+            Assembly assembly,
+            string path,
+            string invariant
+        )
         {
-            Culture = CultureInfo.CurrentUICulture;
             Assembly = assembly;
             Path = path.Replace('\\', '.').Replace('/', '.');
+
+            InvariantCulture = new(invariant);
+            InvariantTranslation = GetTranslation(InvariantCulture);
+
+            Culture = InvariantCulture;
 
             this
                 .WhenAnyValue(o => o.Culture)
                 .Select(culture =>
                 {
-                    var respath = Assembly
-                        .GetManifestResourceNames()
-                        .FirstOrDefault(resName =>
-                            resName == $"{Assembly.GetName().Name}{Path}.{culture.Name}.toml"
-                        );
-
-                    if (respath is null)
+                    if (culture.IsNeutralCulture)
                     {
-                        return null;
+                        return InvariantTranslation;
                     }
 
-                    using var reader = new StreamReader(
-                        Assembly.GetManifestResourceStream(respath)!
-                    );
-
-                    return TOML.Parse(reader).AsTable.RawTable
-                        .Select(pair => new KeyValuePair<string, string?>(
-                            pair.Key,
-                            pair.Value
-                        ))
-                        .ToFrozenDictionary();
+                    return GetTranslation(culture);
                 })
                 .ToPropertyEx(this, o => o.Translation);
         }
@@ -58,5 +51,41 @@ namespace Andromeda.Localization
 
         [ObservableAsProperty]
         public IDictionary<string, string?>? Translation { get; }
+
+        public CultureInfo InvariantCulture { get; }
+
+        public IDictionary<string, string?>? InvariantTranslation { get; }
+
+        private FrozenDictionary<string, string?>? GetTranslation(
+            CultureInfo culture
+        )
+        {
+            var respath = Assembly
+                .GetManifestResourceNames()
+                .FirstOrDefault(resName =>
+                    resName == $"{Assembly.GetName().Name}{Path}.{culture.Name}.toml"
+                );
+
+            if (respath is null)
+            {
+                return null;
+            }
+
+            using var stream = Assembly.GetManifestResourceStream(respath);
+
+            if (stream is null)
+            {
+                return null;
+            }
+
+            using var reader = new StreamReader(stream);
+
+            return TOML.Parse(reader).AsTable.RawTable
+                .Select(pair => new KeyValuePair<string, string?>(
+                    pair.Key,
+                    pair.Value
+                ))
+                .ToFrozenDictionary();
+        }
     }
 }

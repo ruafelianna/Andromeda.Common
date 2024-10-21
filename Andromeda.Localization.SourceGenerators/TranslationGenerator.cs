@@ -46,12 +46,14 @@ namespace Andromeda.Localization.SourceGenerators
             string Directory,
             string FullPath,
             TomlNode Class,
-            TomlNode Namespace
+            TomlNode Namespace,
+            TomlNode Invariant
         );
 
         private record InvariantConfig(
             TomlNode Class,
             TomlNode Namespace,
+            TomlNode Invariant,
             TomlTable Translations,
             string? TranslationPath
         );
@@ -80,7 +82,8 @@ namespace Andromeda.Localization.SourceGenerators
                     $"{toml[LocalizationConf_Invariant]}{LocalizationConf_Ext}"
                 ),
                 toml[LocalizationConf_Class],
-                toml[LocalizationConf_Namespace]
+                toml[LocalizationConf_Namespace],
+                toml[LocalizationConf_Invariant]
             );
         }
 
@@ -101,6 +104,7 @@ namespace Andromeda.Localization.SourceGenerators
             return new(
                 data.LData.LConfig.Class,
                 data.LData.LConfig.Namespace,
+                data.LData.LConfig.Invariant,
                 TOML.Parse(
                     new StringReader(data.LData.TFiles
                         .FirstOrDefault(file => file.Path == data.LData.LConfig.FullPath)?
@@ -128,7 +132,8 @@ namespace Andromeda.Localization.SourceGenerators
         {{
             {CL_TranslationProvider} = {KW_New} {CL_TranslationProvider}(
 {Tab}{Tab}{Tab}{Tab}{KW_TypeOf}({config.Class}).{nameof(Type.Assembly)},
-{Tab}{Tab}{Tab}{Tab}@""{config.TranslationPath}""
+{Tab}{Tab}{Tab}{Tab}@""{config.TranslationPath}"",
+{Tab}{Tab}{Tab}{Tab}""{config.Invariant}""
 {Tab}{Tab}{Tab});
 
 {string.Join("\n", config.Translations.AsTable.RawTable
