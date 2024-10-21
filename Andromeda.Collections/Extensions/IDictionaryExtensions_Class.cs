@@ -15,5 +15,15 @@ namespace Andromeda.Collections.Extensions
                     ? val as TDefault
                     : null
             ) ?? defaultValue;
+
+        public static TObject? GetValueOrDefault<TKey, TObject>(
+            this IDictionary<TKey, TObject?> dict,
+            TKey key,
+            TObject? defaultValue = null
+        )
+            where TObject : class
+            => dict.TryGetValue(key, out var val)
+                ? val
+                : defaultValue;
     }
 }
