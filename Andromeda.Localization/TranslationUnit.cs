@@ -2,6 +2,7 @@ using Andromeda.Localization.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
+using Andromeda.Collections.Extensions;
 
 namespace Andromeda.Localization
 {
@@ -15,13 +16,8 @@ namespace Andromeda.Localization
             Key = key;
 
             provider
-                .WhenAnyValue(o => o.Culture)
-                .Select(culture => provider
-                    .GetTranslation(
-                        this,
-                        culture
-                    )
-                )
+                .WhenAnyValue(o => o.Translation)
+                .Select(dict => dict?.GetValueOrDefault(Key))
                 .ToPropertyEx(this, o => o.Value);
         }
 

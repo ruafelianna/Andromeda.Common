@@ -127,8 +127,8 @@ namespace Andromeda.Localization.SourceGenerators
         {KW_Static} {config.Class}()
         {{
             {CL_TranslationProvider} = {KW_New} {CL_TranslationProvider}(
-{Tab}{Tab}{Tab}{Tab}{KW_TypeOf}({config.Class}).{nameof(GetType)}().{nameof(Type.Assembly)},
-{Tab}{Tab}{Tab}{Tab}""{config.TranslationPath}""
+{Tab}{Tab}{Tab}{Tab}{KW_TypeOf}({config.Class}).{nameof(Type.Assembly)},
+{Tab}{Tab}{Tab}{Tab}@""{config.TranslationPath}""
 {Tab}{Tab}{Tab});
 
 {string.Join("\n", config.Translations.AsTable.RawTable

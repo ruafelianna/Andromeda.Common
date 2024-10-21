@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Andromeda.Localization.Abstractions
@@ -6,9 +7,6 @@ namespace Andromeda.Localization.Abstractions
     {
         CultureInfo Culture { get; set; }
 
-        string? GetTranslation(
-            ITranslationUnit unit,
-            CultureInfo culture
-        );
+        IDictionary<string, string?>? Translation { get; }
     }
 }
