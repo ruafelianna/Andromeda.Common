@@ -1,27 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup Label="FrameworkProperties">
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
-
-  <PropertyGroup Label="AssemblyProperties">
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Label="NugetProperties">
-    <Authors>Maria Sorokina</Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.0.0-rc</PackageVersion>
-  </PropertyGroup>
+  <Import Project="$(RootFolder)Standard.Build.props"/>
 
   <ItemGroup>
-    <PackageReference Include="Andromeda.SourceGenerators.Enum" Version="1.0.0-rc"
-                      OutputItemType="Analyzer"
-                      PrivateAssets ="all"
-                      ReferenceOutputAssembly="False"/>
+    <PackageReference Include="Andromeda.SourceGenerators.Enum" OutputItemType="Analyzer" PrivateAssets ="all" ReferenceOutputAssembly="False"/>
   </ItemGroup>
-
 </Project>
