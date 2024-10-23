@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(RootFolder)Standard.Build.props"/>
+  <Import Project="$(RootFolder)Standard.props"/>
 
   <ItemGroup>
     <PackageReference Include="Andromeda.SourceGenerators.Enum" OutputItemType="Analyzer" PrivateAssets ="all" ReferenceOutputAssembly="False"/>

@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(RootFolder)Analyzer.Build.props"/>
+  <Import Project="$(RootFolder)Analyzer.props"/>
 
   <ItemGroup>
     <PackageReference Include="Tommy"  PrivateAssets="all" GeneratePathProperty="true" />
