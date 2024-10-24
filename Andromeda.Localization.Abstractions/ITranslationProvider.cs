@@ -7,6 +7,10 @@ namespace Andromeda.Localization.Abstractions
     {
         CultureInfo Culture { get; set; }
 
+        CultureInfo InvariantCulture { get; }
+
         IDictionary<string, string?>? Translation { get; }
+
+        IDictionary<string, string?>? InvariantTranslation { get; }
     }
 }

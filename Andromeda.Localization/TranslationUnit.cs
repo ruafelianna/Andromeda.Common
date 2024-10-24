@@ -17,7 +17,13 @@ namespace Andromeda.Localization
 
             provider
                 .WhenAnyValue(o => o.Translation)
-                .Select(dict => dict?.GetValueOrDefault(Key))
+                .Select(dict => dict?.GetValueOrDefault(
+                    Key,
+                    provider.InvariantTranslation?.GetValueOrDefault(
+                        Key
+                    )
+                    ?? Key
+                 ))
                 .ToPropertyEx(this, o => o.Value);
         }
 
